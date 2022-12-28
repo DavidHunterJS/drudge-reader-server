@@ -16,8 +16,17 @@ module.exports = {
   connectToServer: (callback: any) => {
     client.connect((err: any, db: any) => {
       if (db) {
-        _db = db.db("dr");
         console.log("Successfully connected to MongoDB.");
+
+        // SUBSCRIPTION TO REAL-TIME DB CHANGES USING CHANGESTREAM
+        _db = db.db("dr");
+        const collection = _db.collection("links");
+        const changeStream = collection.watch();
+        changeStream.on("change", (change: Object[]) => {
+          console.log(
+            `There was a change to the collection, This is when we send the data to the client.`
+          );
+        });
       }
       return callback(err);
     });

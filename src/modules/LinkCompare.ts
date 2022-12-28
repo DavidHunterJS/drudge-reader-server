@@ -15,3 +15,5 @@ module.exports = (temp: string[]) => {
     }
   }
 };
+// RETURN TRUE IF NO CHANGES IN DATA
+// RETURN FALSE ON FIRST RUN AND WHEN THE ARE CHANGES IN DATA

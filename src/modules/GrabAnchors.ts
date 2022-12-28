@@ -1,12 +1,12 @@
-import express, { Request, Response, NextFunction, response } from "express";
+import { Request, Response, NextFunction } from "express";
 import * as cheerio from "cheerio";
 import axios, { AxiosResponse } from "axios";
 const compareArrays = require("./LinkCompare");
-const PORT: number = parseInt(process.env.PORT as string, 10);
 const URL: string = "https://drudgereport.com";
 
 let anchorsArr: Object[];
 const grabAnchors = async (req: Request, res: Response, nxt: NextFunction) => {
+  //set interval here
   let anchors: Object[] = [];
   let linkArr: String[] = [];
   let data = await axios.get(URL).then((response: AxiosResponse) => {
