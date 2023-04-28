@@ -1,19 +1,22 @@
-let saved: String[];
+import Story from "../models/Story";
+const updateDocument = require("./UpdateDb");
+let saved: string[];
 
-module.exports = (temp: string[]) => {
+export default (temp: string[]) => {
   if (saved == undefined) {
     saved = [...temp];
-    return false;
+    return true;
   } else {
     if (
       temp.length === saved.length &&
       temp.every((value, index) => value === saved[index])
     ) {
-      return true;
-    } else {
       return false;
+    } else {
+      updateDocument(saved, temp);
+      return true;
     }
   }
 };
-// RETURN TRUE IF NO CHANGES IN DATA
-// RETURN FALSE ON FIRST RUN AND WHEN THE ARE CHANGES IN DATA
+// RETURNS FALSE IF NO CHANGES IN DATA
+// RETURNS TRUE ON FIRST RUN AND WHEN THERE ARE CHANGES IN DATA

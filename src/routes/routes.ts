@@ -1,10 +1,7 @@
-const express = require("express");
-const Story = require("./models/Story");
+import * as express from "express";
 const router = express.Router();
+const { connectionHandler } = require("../controllers/storiesController");
 
-router.get("/stories", async (req: any, res: any) => {
-  const stories = await Story.find({});
-  res.send(stories);
-});
+router.get("/dr", connectionHandler);
 
-module.exports = Story;
+module.exports = router;
