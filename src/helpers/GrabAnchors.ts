@@ -17,8 +17,8 @@ exports.grabAnchors = async (
   let data = await axios.get(URL).then((response: AxiosResponse) => {
     return response.data;
   });
-  // CHEERIO DATA TRANSFORMING PART
-  // SCRAPING THE PAGE FOR LINKS
+
+  // SCRAPING THE PAGE FOR LINKS WITH CHEERIO
   const $ = cheerio.load(data);
   // HEADLINE LINKS
   $("html body tt b tt b center")
@@ -64,7 +64,7 @@ exports.grabAnchors = async (
       });
       anchors.push(story);
     });
-  // // COLUMN 2 LINKS
+  // COLUMN 2 LINKS
   $("#div-gpt-ad-1567201323104-0")
     .prevAll()
     .filter("A")
@@ -79,7 +79,7 @@ exports.grabAnchors = async (
       });
       anchors.push(story);
     });
-  // // COLUMN 3 LINKS
+  // COLUMN 3 LINKS
   $("#div-gpt-ad-1564685863820-0")
     .prevAll()
     .filter("A")
@@ -96,9 +96,9 @@ exports.grabAnchors = async (
     });
 
   let compareBool = compareArrays(linkArr);
-  // console.log(compareBool);
+  console.log(compareBool);
   console.log(anchors.length);
-
+  // console.log(anchors);
   anchorsArr = [...anchors];
   req.anchorsArr = anchorsArr;
   req.compareBool = compareBool;

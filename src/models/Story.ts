@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
+mongoose.set("strictQuery", false);
 
 export interface IStory extends Document {
   link: string;
@@ -9,7 +10,7 @@ export interface IStory extends Document {
 }
 
 const storySchema = new Schema({
-  link: { type: String, required: true, index: true },
+  link: { type: String, required: true, index: true, unique: true },
   addedOn: { type: Date, required: true },
   removedOn: { type: Date, required: true },
   pageLocation: { type: String, required: true },
