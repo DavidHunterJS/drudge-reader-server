@@ -1,4 +1,6 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { request, response } from "express";
+import http from "http";
+import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 const db = require("./db/connect");
@@ -8,9 +10,11 @@ const { webSrcapeInterval } = require("./helpers/WebScrapeInterval");
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
 app.use(express.json());
 app.use(cors());
-app.use(webSrcapeInterval);
+webSrcapeInterval(request, response);
 app.use("/", router);
 
 if (!process.env.PORT) {
@@ -18,9 +22,11 @@ if (!process.env.PORT) {
 }
 const PORT: number = parseInt(process.env.PORT as string, 10);
 
-app.get("/", (req, res) => {
-  res.json({ message: "Drudge Reader." });
-});
+app.use(express.static("public"));
+
+// app.get("/", (req, res) => {
+//   res.sendFile(__dirname + "./public/index.html");
+// });
 
 app.listen(PORT, () => {
   db.connectToServer(function (err: any) {

@@ -102,5 +102,4 @@ exports.grabAnchors = async (
   anchorsArr = [...anchors];
   req.anchorsArr = anchorsArr;
   req.compareBool = compareBool;
-  nxt();
 };
