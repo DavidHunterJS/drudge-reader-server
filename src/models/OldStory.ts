@@ -1,3 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Model, Document } from "mongoose";
+import { IStory } from "./Story";
+
+export type IOldStory = IStory & Document;
+
 import Story from "./Story";
-export default mongoose.model("OldStory", Story.schema, "old-stories");
+const OldStoryModel: Model<IOldStory> = mongoose.model<IOldStory>(
+  "OldStory",
+  Story.schema,
+  "old-stories"
+);
+
+export default OldStoryModel;

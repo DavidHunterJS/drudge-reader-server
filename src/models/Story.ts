@@ -1,12 +1,12 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, model, Model } from "mongoose";
 mongoose.set("strictQuery", false);
 
 export interface IStory extends Document {
   link: string;
   addedOn: Date;
   removedOn: Date;
-  pageLocation: String;
-  active: Boolean;
+  pageLocation: string;
+  active: boolean;
 }
 
 const storySchema = new Schema({
@@ -17,4 +17,5 @@ const storySchema = new Schema({
   active: { type: Boolean, required: true, default: true }
 });
 
-export default mongoose.model<IStory>("Story", storySchema);
+const Story: Model<IStory> = model<IStory>("Story", storySchema);
+export default Story;

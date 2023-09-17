@@ -1,7 +1,8 @@
-import * as express from "express";
-const router = express.Router();
-const { connectionHandler } = require("../controllers/stories.controller");
+import { Router } from "express";
+import { connectionHandler } from "../controllers/stories.controller";
 
-router.get("/dr", connectionHandler);
+const router = Router();
 
-module.exports = router;
+router.get("/", connectionHandler);
+
+export default router;

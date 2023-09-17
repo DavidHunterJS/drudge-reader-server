@@ -1,20 +1,25 @@
-import { Request, Response, NextFunction } from "express";
-const { grabAnchors } = require("./GrabAnchors");
-const { addNewStories } = require("./UpdateDb");
+import { Request, Response } from "express";
+import { grabAnchors } from "./GrabAnchors";
+import { addNewStories } from "./UpdateDb";
 
-export const webSrcapeInterval = async (
-  req: Request,
-  res: Response,
-  nxt: NextFunction
-) => {
-  const interval = setInterval(() => {
+const webScrapeInterval = (req: Request, res: Response) => {
+  const intervalTime = 20000; // Set your desired interval time in milliseconds
+
+  const interval = setInterval(async () => {
     console.log(`Interval called`);
-    grabAnchors(req, res, nxt);
-    let haveLinksChanged = req.compareBool;
+
+    // Fetch anchors and compare
+    await grabAnchors(req);
+    const haveLinksChanged = req.compareBool;
+
     if (haveLinksChanged) {
       console.log(`compareBool is ${haveLinksChanged}`);
-      addNewStories(req, res, nxt);
-      console.log(`addNewStories Called From setInterval`);
+
+      // Add new stories if links have changed
+      await addNewStories(req, res);
+      console.log(`addNewStories Called From webScrapeInterval`);
     }
-  }, 20000);
+  }, intervalTime);
 };
+
+export default webScrapeInterval;

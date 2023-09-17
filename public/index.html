@@ -5,22 +5,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!-- <script src="https://cdn.socket.io/socket.io-4.1.3.min.js"></script> -->
     <title>Socket.io Example</title>
 </head>
 
 <body>
-    <h1>Our Socket.io Chat Application</h1>
+    <h1>Our Socket.io Application</h1>
     <div>
         <h2>Messages</h2>
-        <ul></ul>
+        <ul id="messages"></ul>
     </div>
-    <form action="">
+    <!-- <form action="">
         <input type="text" />
         <button>Send</button>
-    </form>
+    </form> -->
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        // Connect to the server
         const socket = io();
+
+        // Listen for the initialDocuments event
+        socket.on("initialDocuments", (documents) => {
+            // Display the documents on the page
+            const documentsDiv = document.getElementById("documents");
+            documents.forEach((document) => {
+                const documentDiv = document.createElement("div");
+                documentDiv.textContent = document.title;
+                documentsDiv.appendChild(documentDiv);
+            });
+        });
+
+        // Listen for the updateDocuments event
+        socket.on("updateDocuments", (documents) => {
+            // Update the displayed documents on the page
+            const documentsDiv = document.getElementById("documents");
+            documentsDiv.innerHTML = "";
+            documents.forEach((document) => {
+                const documentDiv = document.createElement("div");
+                documentDiv.textContent = document.title;
+                documentsDiv.appendChild(documentDiv);
+            });
+        });
+
     </script>
 </body>
 
