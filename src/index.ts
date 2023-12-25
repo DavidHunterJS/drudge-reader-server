@@ -6,12 +6,17 @@ import dotenv from "dotenv";
 import db from "./db/connect";
 import router from "./routes/routes";
 import webSrcapeInterval from "./helpers/WebScrapeInterval";
+import { connectionHandler } from "./controllers/stories.controller";
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000"
+  }
+});
 
 if (!process.env.PORT) {
   process.exit(1);
@@ -20,8 +25,14 @@ const PORT: number = parseInt(process.env.PORT as string, 10);
 
 app.use(express.json());
 app.use(cors());
-app.use("/", router);
-app.use(express.static("public"));
+
+// app.use("/", router);
+// app.use(express.static("public"));
+
+io.on("connection", (socket) => {
+  console.log("a user connected using SOCKETIO");
+  connectionHandler(io);
+});
 
 server.listen(PORT, () => {
   db.connectToServer();

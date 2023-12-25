@@ -21,7 +21,8 @@ export const addNewStories = async (req: Request, res: Response) => {
   }
 };
 
-// CHECKS IF STORY IS NO LONGER ON CURRENT PAGE BUT STILL IN DB
+// CHECKS IF STORY IS NO LONGER ON CURRENT WEBPAGE BUT STILL IN DB
+// REMOVES STORIES FROM DATABASE THAT ARE NO LONGER ON CURRENT LIVE WEB PAGE
 export const removeOldStories = async (temp: string[]) => {
   try {
     console.log("removeOldStories Fired!");

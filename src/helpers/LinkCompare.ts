@@ -1,4 +1,4 @@
-import { removeOldStories } from "./UpdateDb";
+import { removeOldStories } from "./dbUtils";
 
 let saved: string[] | undefined;
 

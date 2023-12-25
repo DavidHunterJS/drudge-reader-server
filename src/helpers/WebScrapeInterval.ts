@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { grabAnchors } from "./GrabAnchors";
-import { addNewStories } from "./UpdateDb";
+import { addNewStories } from "./dbUtils";
 
 const webScrapeInterval = (req: Request, res: Response) => {
   const intervalTime = 20000; // Set your desired interval time in milliseconds

@@ -1,18 +1,20 @@
-import { Request, Response } from "express";
 import Story from "../models/Story";
-export const connectionHandler = async (req: Request, res: Response) => {
+import { Server } from "socket.io";
+let io: Server;
+
+export const connectionHandler = async (io: Server) => {
   console.log("connectionHandler Fired!");
   try {
     // Send the entire collection to the client
     const documents = await Story.find({});
-    res.json(documents);
+    io.emit("initialDocuments", documents);
     // Watch for changes to the collection
     const changeStream = Story.watch();
     changeStream.on("change", async () => {
       console.log("Change Stream Fired!");
       try {
         const updatedDocuments = await Story.find({});
-        // res.json(updatedDocuments);
+        io.emit("updateDocuments", updatedDocuments);
         // console.log("updatedDocuments were sent");
       } catch (err) {
         console.log(err);
