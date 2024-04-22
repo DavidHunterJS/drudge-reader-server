@@ -46,7 +46,7 @@ export const grabAnchors = async (req: Request) => {
       anchors.push(story);
     });
   // COLUMN 1 LINKS
-  $("#div-gpt-ad-1564685732534-0")
+  $("#dr_dae_BTF_left")
     .prevAll()
     .filter("A")
     .each((i, e) => {
@@ -61,7 +61,7 @@ export const grabAnchors = async (req: Request) => {
       anchors.push(story);
     });
   // COLUMN 2 LINKS
-  $("#div-gpt-ad-1567201323104-0")
+  $("#dr_dae_BTF_center")
     .prevAll()
     .filter("a")
     .each((i, e) => {
@@ -76,7 +76,7 @@ export const grabAnchors = async (req: Request) => {
       anchors.push(story);
     });
   // COLUMN 3 LINKS
-  $("#div-gpt-ad-1564685863820-0")
+  $("#dr_dae_BTF_right")
     .prevAll()
     .filter("A")
     .each((i, e) => {

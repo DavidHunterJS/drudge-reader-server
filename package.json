@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "build": "tsc --project ./",
-    "start:dev": "nodemon ./src/index.ts",
-    "start:prod": "node ./dist/index.js",
+    "dev": "nodemon ./src/index.ts",
+    "prod": "node ./dist/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
