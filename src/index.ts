@@ -28,6 +28,7 @@ app.use(cors());
 
 // app.use("/", router);
 // app.use(express.static("public"));
+// more comments here
 
 io.on("connection", (socket) => {
   console.log("a user connected using SOCKETIO");
