@@ -26,6 +26,9 @@ const PORT: number = parseInt(process.env.PORT as string, 10);
 app.use(express.json());
 app.use(cors());
 
+// app.use("/", router);
+// app.use(express.static("public"));
+
 io.on("connection", (socket) => {
   console.log("a user connected using SOCKETIO");
   connectionHandler(io);
