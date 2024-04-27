@@ -7,10 +7,10 @@ import express, {
 } from "express";
 import http, { createServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
-import cors from "cors";
+// import cors from "cors";
 import dotenv from "dotenv";
 import db from "./db/connect";
-import router from "./routes/routes";
+// import router from "./routes/routes";
 import webSrcapeInterval from "./helpers/WebScrapeInterval";
 import { connectionHandler } from "./controllers/stories.controller";
 
@@ -18,7 +18,7 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
-const server = http.createServer(app);
+// const server = http.createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
     origin: "*", // Adjust this to match your front-end URL
