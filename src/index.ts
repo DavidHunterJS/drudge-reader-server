@@ -22,7 +22,8 @@ const server = http.createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
     origin: "*", // Adjust this to match your front-end URL
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Access-Control-Allow-Origin"]
   }
 });
 
@@ -36,7 +37,7 @@ if (!process.env.PORT) {
 const PORT: number = parseInt(process.env.PORT as string, 10);
 
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
 io.on("connection", (socket: Socket) => connectionHandler(socket));
 
 app.use(
