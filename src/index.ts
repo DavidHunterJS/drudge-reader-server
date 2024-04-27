@@ -1,6 +1,12 @@
-import express, { request, response } from "express";
-import http from "http";
-import { Server } from "socket.io";
+import express, {
+  request,
+  response,
+  Response,
+  Request,
+  NextFunction
+} from "express";
+import http, { createServer } from "http";
+import { Server as SocketIOServer, Socket } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 import db from "./db/connect";
@@ -11,11 +17,17 @@ import { connectionHandler } from "./controllers/stories.controller";
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
 const server = http.createServer(app);
-const io = new Server(server, {
+const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "http://localhost:3000"
+    origin: "*",
+    methods: ["GET", "POST"]
   }
+});
+
+app.get("/", (request, response) => {
+  response.send("Hello World!");
 });
 
 if (!process.env.PORT) {
@@ -25,16 +37,16 @@ const PORT: number = parseInt(process.env.PORT as string, 10);
 
 app.use(express.json());
 app.use(cors());
+io.on("connection", (socket: Socket) => connectionHandler(socket));
 
-// app.use("/", router);
-// app.use(express.static("public"));
+app.use(
+  (error: any, request: Request, response: Response, next: NextFunction) => {
+    console.error(error.stack);
+    response.status(500).send("Something broke!");
+  }
+);
 
-io.on("connection", (socket) => {
-  console.log("a user connected using SOCKETIO");
-  connectionHandler(io);
-});
-
-server.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   db.connectToServer();
   console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
 });
