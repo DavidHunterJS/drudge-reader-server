@@ -21,8 +21,10 @@ const httpServer = createServer(app);
 const server = http.createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
+    origin: "*", // Adjust this to match your front-end URL
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
   }
 });
 

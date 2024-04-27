@@ -14,31 +14,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectionHandler = void 0;
 const Story_1 = __importDefault(require("../models/Story"));
-let io;
-const connectionHandler = (io) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("connectionHandler Fired!");
-    try {
-        // Send the entire collection to the client
-        const documents = yield Story_1.default.find({});
-        io.emit("initialDocuments", documents);
-        // Watch for changes to the collection
+const connectionHandler = (socket) => {
+    console.log(`A new client connected`, socket.id);
+    const sendInitialData = () => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const documents = yield Story_1.default.find({});
+            socket.emit("initialDocuments", documents);
+        }
+        catch (err) {
+            console.error("Error sending initial data:", err);
+        }
+    });
+    const startWatchingChanges = () => {
         const changeStream = Story_1.default.watch();
         changeStream.on("change", () => __awaiter(void 0, void 0, void 0, function* () {
-            console.log("Change Stream Fired!");
+            console.log("Change detected in Story collection");
             try {
                 const updatedDocuments = yield Story_1.default.find({});
-                io.emit("updateDocuments", updatedDocuments);
-                // console.log("updatedDocuments were sent");
+                socket.emit("updateDocuments", updatedDocuments);
             }
             catch (err) {
-                console.log(err);
+                console.error("Error updating documents:", err);
             }
         }));
-        // Close the Socket.IO connection if the client disconnects
-    }
-    catch (err) {
-        console.log(err);
-        return;
-    }
-});
+        socket.on("disconnect", () => {
+            console.log("Client disconnected, closing change stream");
+            changeStream.close();
+        });
+    };
+    sendInitialData();
+    startWatchingChanges();
+};
 exports.connectionHandler = connectionHandler;
