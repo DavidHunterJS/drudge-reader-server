@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.connectToServer = void 0;
 const mongoose = require("mongoose");
 const path = process.cwd();
 require("dotenv").config({
@@ -27,4 +28,4 @@ const connectToServer = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error(error);
     }
 });
-exports.default = { connectToServer };
+exports.connectToServer = connectToServer;

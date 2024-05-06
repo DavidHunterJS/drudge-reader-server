@@ -10,7 +10,7 @@ if (process.env.ATLAS_URI) {
   Db = process.env.ATLAS_URI;
 }
 
-const connectToServer = async () => {
+export const connectToServer = async () => {
   try {
     await mongoose.connect(Db);
     console.log("⚡️[database]: Successfully connected to Atlas-MongoDB.");
@@ -18,4 +18,3 @@ const connectToServer = async () => {
     console.error(error);
   }
 };
-export default { connectToServer };

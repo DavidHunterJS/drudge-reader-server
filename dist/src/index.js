@@ -27,21 +27,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
-const http_1 = __importStar(require("http"));
+const http_1 = require("http");
 const socket_io_1 = require("socket.io");
-const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const connect_1 = __importDefault(require("./db/connect"));
+const connect_1 = require("./db/connect");
 const WebScrapeInterval_1 = __importDefault(require("./helpers/WebScrapeInterval"));
 const stories_controller_1 = require("./controllers/stories.controller");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const httpServer = (0, http_1.createServer)(app);
-const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(httpServer, {
     cors: {
         origin: "*",
-        methods: ["GET", "POST"]
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Access-Control-Allow-Origin"]
     }
 });
 app.get("/", (request, response) => {
@@ -52,14 +51,13 @@ if (!process.env.PORT) {
 }
 const PORT = parseInt(process.env.PORT, 10);
 app.use(express_1.default.json());
-app.use((0, cors_1.default)());
 io.on("connection", (socket) => (0, stories_controller_1.connectionHandler)(socket));
 app.use((error, request, response, next) => {
     console.error(error.stack);
     response.status(500).send("Something broke!");
 });
 httpServer.listen(PORT, () => {
-    connect_1.default.connectToServer();
+    (0, connect_1.connectToServer)();
     console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
 });
 (0, WebScrapeInterval_1.default)(express_1.request, express_1.response);

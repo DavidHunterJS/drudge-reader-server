@@ -5,12 +5,10 @@ import express, {
   Request,
   NextFunction
 } from "express";
-import http, { createServer } from "http";
+import { createServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
-// import cors from "cors";
 import dotenv from "dotenv";
-import db from "./db/connect";
-// import router from "./routes/routes";
+import { connectToServer } from "./db/connect";
 import webSrcapeInterval from "./helpers/WebScrapeInterval";
 import { connectionHandler } from "./controllers/stories.controller";
 
@@ -18,7 +16,6 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
-// const server = http.createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
     origin: "*", // Adjust this to match your front-end URL
@@ -37,7 +34,6 @@ if (!process.env.PORT) {
 const PORT: number = parseInt(process.env.PORT as string, 10);
 
 app.use(express.json());
-// app.use(cors());
 io.on("connection", (socket: Socket) => connectionHandler(socket));
 
 app.use(
@@ -48,7 +44,7 @@ app.use(
 );
 
 httpServer.listen(PORT, () => {
-  db.connectToServer();
+  connectToServer();
   console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
 });
 
