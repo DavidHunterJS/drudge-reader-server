@@ -4,8 +4,8 @@
   "description": "the backend of the drudge-reader app",
   "main": "app.js",
   "jest": {
-  "testEnvironment": "node"
-},
+    "testEnvironment": "node"
+  },
   "scripts": {
     "build": "tsc --project ./",
     "dev": "nodemon ./src/index.ts",
