@@ -12,7 +12,7 @@ import cors from "cors";
 import { connectToServer } from "./db/connect";
 import webSrcapeInterval from "./helpers/WebScrapeInterval";
 import { connectionHandler } from "./controllers/stories.controller";
-
+// ss
 dotenv.config();
 
 const app = express();
@@ -20,7 +20,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "*", // Adjust this to match your front-end URL
+    origin: "https://trippy.wtf", // Adjust this to match your front-end URL
     methods: ["GET", "POST"],
     allowedHeaders: ["Access-Control-Allow-Origin"]
   }
