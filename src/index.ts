@@ -12,7 +12,7 @@ import cors from "cors";
 import { connectToServer } from "./db/connect";
 import webSrcapeInterval from "./helpers/WebScrapeInterval";
 import { connectionHandler } from "./controllers/stories.controller";
-// ss
+// sss
 dotenv.config();
 
 const app = express();
