@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import { grabAnchors } from "./GrabAnchors";
 import { addNewStories } from "./dbUtils";
 

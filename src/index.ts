@@ -1,14 +1,7 @@
-import express, {
-  request,
-  response,
-  Response,
-  Request,
-  NextFunction
-} from "express";
+import express, { Response, Request, NextFunction } from "express";
 import { createServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import dotenv from "dotenv";
-import cors from "cors";
 import { connectToServer } from "./db/connect";
 import webSrcapeInterval from "./helpers/WebScrapeInterval";
 import { connectionHandler } from "./controllers/stories.controller";
@@ -43,7 +36,7 @@ io.on("connection", (socket: Socket) => connectionHandler(socket));
 app.use(
   (error: any, request: Request, response: Response, next: NextFunction) => {
     console.error(error.stack);
-    response.status(500).send("Something broke!");
+    response.status(500).send("Internal Server Error");
   }
 );
 httpServer.listen(PORT, () => {

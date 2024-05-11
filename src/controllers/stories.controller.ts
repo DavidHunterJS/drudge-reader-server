@@ -10,18 +10,21 @@ export const connectionHandler = (socket: Socket): void => {
       socket.emit("initialDocuments", documents);
     } catch (err) {
       console.error("Error sending initial data:", err);
+      socket.emit("error", "Failed to fetch initial data");
     }
   };
 
   const startWatchingChanges = () => {
     const changeStream = Story.watch();
-    changeStream.on("change", async () => {
-      console.log("Change detected in Story collection");
+
+    changeStream.on("change", async (change) => {
+      console.log("Change detected in Story collection", change);
       try {
         const updatedDocuments = await Story.find({});
         socket.emit("updateDocuments", updatedDocuments);
       } catch (err) {
         console.error("Error updating documents:", err);
+        socket.emit("error", "Failed to update documents");
       }
     });
 
