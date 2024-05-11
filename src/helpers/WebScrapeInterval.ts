@@ -2,21 +2,19 @@ import { Request, Response } from "express";
 import { grabAnchors } from "./GrabAnchors";
 import { addNewStories } from "./dbUtils";
 
-const webScrapeInterval = (req: Request, res: Response) => {
+const webScrapeInterval = () => {
   const intervalTime = 20000; // Set your desired interval time in milliseconds
 
   const interval = setInterval(async () => {
     console.log(`Interval called`);
-
+    const { anchorsArr, compareBool } = await grabAnchors();
     // Fetch anchors and compare
-    await grabAnchors(req);
-    const haveLinksChanged = req.compareBool;
 
-    if (haveLinksChanged) {
-      console.log(`compareBool is ${haveLinksChanged}`);
+    if (compareBool) {
+      console.log(`compareBool is ${compareBool}`);
 
       // Add new stories if links have changed
-      await addNewStories(req, res);
+      await addNewStories(anchorsArr);
       console.log(`addNewStories Called From webScrapeInterval`);
     }
   }, intervalTime);

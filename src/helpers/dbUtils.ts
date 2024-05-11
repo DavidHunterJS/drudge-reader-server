@@ -1,15 +1,11 @@
-import { Request, Response } from "express";
-import Story, { IStory } from "../models/Story";
+import { response } from "express";
+import Story from "../models/Story";
 import OldStory from "../models/OldStory";
 import { log } from "console";
-
 // ADDS ALL THE NEW STORIES TO THE STORIES COLLECTION
-export const addNewStories = async (req: Request, res: Response) => {
+export const addNewStories = async (stories: Object[]) => {
   try {
     console.log("addNewStories fired - from addNewStories.");
-
-    const stories: IStory[] = (req.anchorsArr as IStory[]) || [];
-
     const result = await Story.insertMany(stories, { ordered: false }).catch(
       (error) => {
         console.log("The following error is expected after insertMany", error);
@@ -17,7 +13,9 @@ export const addNewStories = async (req: Request, res: Response) => {
     );
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Server error occurred" });
+    response
+      .status(500)
+      .json({ success: false, message: "Server error occurred" });
   }
 };
 

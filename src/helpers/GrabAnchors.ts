@@ -7,7 +7,7 @@ import Story, { IStory } from "../models/Story";
 
 let anchorsArr: Object[];
 
-export const grabAnchors = async (req: Request) => {
+export const grabAnchors = async () => {
   let anchors: IStory[] = [];
   let linkArr: string[] = [];
   let data = await axios.get(URL).then((response: AxiosResponse) => {
@@ -96,6 +96,5 @@ export const grabAnchors = async (req: Request) => {
   console.log(anchors.length);
   // console.log(anchors);
   anchorsArr = [...anchors];
-  req.anchorsArr = anchorsArr;
-  req.compareBool = compareBool;
+  return { anchorsArr, compareBool };
 };
