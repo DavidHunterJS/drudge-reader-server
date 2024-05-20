@@ -26,6 +26,8 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(__dirname + "/node_modules/socket.io/client-dist"));
 app.use("/api", userRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/profile", userRoutes);
 
 app.get("/", (request, response) => {
   response.send("Hello World!");

@@ -6,6 +6,33 @@ import User from "../models/User";
 interface AuthenticatedRequest extends Request {
   user?: any;
 }
+
+// Get all users
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Delete a user
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 // Get user profile
 export const getUserProfile = async (
   req: AuthenticatedRequest,

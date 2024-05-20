@@ -2,9 +2,12 @@
 import express, { Request, Response, NextFunction } from "express";
 import User, { validateUser, hashPassword } from "../models/User";
 import authMiddleware from "../middlewares/authMiddleware";
+import adminMiddleware from "../middlewares/adminMiddleware";
 import {
   getUserProfile,
-  updateUserProfile
+  updateUserProfile,
+  getAllUsers,
+  deleteUser
 } from "../controllers/userController";
 
 const router = express.Router();
@@ -13,11 +16,18 @@ const router = express.Router();
 interface AuthenticatedRequest extends Request {
   user?: any;
 }
+
+// API endpoint to fetch all users
+router.get("/", getAllUsers);
+
+// API endpoint to delete a user
+router.delete("/:userId", deleteUser);
+
 router.post("/register", async (req, res) => {
   console.log("Registration route called");
   try {
     // Extract user registration data from the request body
-    const { username, email, password, name } = req.body;
+    const { username, email, password, firstname, lastname, role } = req.body;
 
     // Validate the registration data
     const validationError = await validateUser(req.body);
@@ -36,10 +46,12 @@ router.post("/register", async (req, res) => {
     // Create a new user instance
     const newUser = new User({
       provider: "local",
+      firstname,
+      lastname,
       username,
       email,
       password,
-      name
+      role
     });
 
     // Hash the password
@@ -62,7 +74,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     // Extract login credentials from the request body
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
 
     // Find the user in the database
     const user = await User.findOne({ username });
@@ -95,8 +107,34 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Protected routes
+router.put("/users/:id", async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    const updatedUser = req.body;
+
+    // Find the user by ID and update it
+    const user = await User.findByIdAndUpdate(userId, updatedUser, {
+      new: true
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// protected routes
 router.get("/profile", authMiddleware, getUserProfile);
 router.put("/profile", authMiddleware, updateUserProfile);
+
+// protected admin route
+router.get("/admin-dashboard", authMiddleware, adminMiddleware, (req, res) => {
+  res.status(200).json({ message: "Welcome to the admin dashboard!" });
+});
 
 export default router;

@@ -4,7 +4,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import * as yup from "yup";
-// import { IMAGES_FOLDER_PATH } from "../utils/constants";
+
 const IMAGES_FOLDER_PATH = path.join("public/images/");
 
 export interface UserDocument extends Document {
@@ -12,7 +12,8 @@ export interface UserDocument extends Document {
   username: string;
   email: string;
   password: string;
-  name?: string;
+  firstName: string;
+  lastName: string;
   avatar?: string;
   role: string;
   bio?: string;
@@ -40,7 +41,8 @@ const isValidUrl = (str: string) => {
 };
 const userSchemaYup = yup.object().shape({
   avatar: yup.mixed().optional(),
-  name: yup.string().min(2).max(30),
+  firstname: yup.string().min(2).max(20),
+  lastname: yup.string().min(2).max(20),
   username: yup
     .string()
     .min(2)
@@ -81,9 +83,17 @@ export const userSchema = new Schema<UserDocument>(
       minlength: 6,
       maxlength: 60
     },
-    name: String,
+    firstName: {
+      type: String,
+      minlength: 3,
+      maxlength: 20
+    },
+    lastName: {
+      type: String,
+      minlength: 3,
+      maxlength: 20
+    },
     avatar: String,
-    role: { type: String, default: "USER" },
     bio: String,
     googleId: {
       type: String,
@@ -94,6 +104,11 @@ export const userSchema = new Schema<UserDocument>(
       type: String,
       unique: true,
       sparse: true
+    },
+    role: {
+      type: String,
+      enum: ["ADMIN", "USER"],
+      default: "USER"
     },
     messages: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }]
   },
@@ -112,10 +127,11 @@ userSchema.methods.toJSON = function () {
   return {
     id: this._id,
     provider: this.provider,
-    email: this.email,
+    firstName: this.firstName,
+    lastName: this.lastName,
     username: this.username,
+    email: this.email,
     avatar: avatar,
-    name: this.name,
     role: this.role,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt
