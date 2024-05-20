@@ -1,3 +1,4 @@
+// index.ts
 import express, { Response, Request, NextFunction } from "express";
 import { createServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
@@ -15,7 +16,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "*", // Adjust this to match your front-end URL
+    origin: "http://localhost:8000", // Adjust this to match your front-end URL
     methods: ["GET", "POST"],
     allowedHeaders: ["Access-Control-Allow-Origin"]
   }
