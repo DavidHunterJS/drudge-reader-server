@@ -22,13 +22,14 @@ const io = new SocketIOServer(httpServer, {
   }
 });
 
-// Mount user routes
 app.use(express.json());
 app.use(cors());
 app.use(express.static(__dirname + "/node_modules/socket.io/client-dist"));
+// Mount user routes
 app.use("/api", userRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/profile", userRoutes);
+app.use("/api/login", userRoutes);
 
 app.get("/", (request, response) => {
   response.send("Hello World!");
