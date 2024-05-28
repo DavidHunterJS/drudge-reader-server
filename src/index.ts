@@ -8,15 +8,20 @@ import { connectToServer } from "./db/connect";
 import webSrcapeInterval from "./helpers/WebScrapeInterval";
 import { connectionHandler } from "./controllers/stories.controller";
 import userRoutes from "./routes/userRoutes";
-// sss
+
 dotenv.config();
 
 const app = express();
 
+// const ORIGIN =
+//   process.env.NODE_ENV === "production"
+//     ? process.env.PROD_ENDPOINT || ""
+//     : process.env.DEV_ENDPOINT || "";
+
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "https://trippy.wtf", // Adjust this to match your front-end URL
+    origin: "http://localhost:3000", // Adjust this to match your front-end URL
     methods: ["GET", "POST"],
     allowedHeaders: ["Access-Control-Allow-Origin"]
   }

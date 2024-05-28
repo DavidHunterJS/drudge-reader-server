@@ -1,6 +1,8 @@
 // userController.ts
 import { Request, Response } from "express";
 import User, { validateUser, hashPassword } from "../models/User";
+const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 
 // Extend the Request interface
 interface AuthenticatedRequest extends Request {
@@ -178,3 +180,63 @@ export const updateUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// DEV OR PROD ENDPOINT
+// const ENDPOINT =
+//   process.env.NODE_ENV === "production"
+//     ? process.env.REACT_APP_PROD_ENDPOINT || ""
+//     : process.env.REACT_APP_DEV_ENDPOINT || "";
+// // Create a Nodemailer transporter
+// const transporter = nodemailer.createTransport({
+//   host: "smtp.dreamhost.com",
+//   port: 465,
+//   secure: true,
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASSWORD
+//   }
+// });
+
+// export const resetPassword = async (req: Request, res: Response) => {
+//   const { email } = req.body;
+//   try {
+//     // Find the user by their email address
+//     const user = await User.findOne({ email });
+
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+
+//     // Generate a unique password reset token
+//     const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+//       expiresIn: "1h" // Token expires in 1 hour
+//     });
+
+//     // Store the reset token and expiration timestamp in the user's document
+//     user.resetToken = resetToken;
+//     user.resetTokenExpiration = new Date(Date.now() + 3600000); // Token expires in 1 hour (3600000 milliseconds)
+//     await user.save();
+
+//     // Create the password reset email
+//     const resetUrl = `https://${ENDPOINT}/reset-password?token=${resetToken}`;
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: email,
+//       subject: "Drudge Reader Password Reset",
+//       html: `
+//         <p>You have requested to reset your password.</p>
+//         <p>Please click the following link to reset your password:</p>
+//         <a href="${resetUrl}">${resetUrl}</a>
+//         <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+//       `
+//     };
+
+//     // Send the password reset email
+//     await transporter.sendMail(mailOptions);
+
+//     res.json({ message: "Password reset email sent" });
+//   } catch (error) {
+//     console.error("Error generating password reset token:", error);
+//     res.status(500).json({ error: "An error occurred" });
+//   }
+// };

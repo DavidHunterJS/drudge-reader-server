@@ -20,6 +20,8 @@ export interface UserDocument extends Document {
   googleId?: string;
   facebookId?: string;
   messages: mongoose.Types.ObjectId[];
+  resetToken?: string;
+  resetTokenExpiration?: Date;
   createdAt: Date;
   updatedAt: Date;
   toJSON(): () => string;
@@ -110,6 +112,8 @@ export const userSchema = new Schema<UserDocument>(
       enum: ["ADMIN", "USER"],
       default: "USER"
     },
+    resetToken: String,
+    resetTokenExpiration: Date,
     messages: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }]
   },
   { timestamps: true }
