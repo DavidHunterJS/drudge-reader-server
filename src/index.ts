@@ -13,10 +13,10 @@ dotenv.config();
 
 const app = express();
 
-// const ORIGIN =
-//   process.env.NODE_ENV === "production"
-//     ? process.env.PROD_ENDPOINT || ""
-//     : process.env.DEV_ENDPOINT || "";
+const ORIGIN =
+  process.env.NODE_ENV === "production"
+    ? process.env.PROD_ENV || ""
+    : process.env.DEV_ENV || "";
 
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
