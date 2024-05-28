@@ -21,7 +21,7 @@ const ORIGIN =
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "http://localhost:3000", // Adjust this to match your front-end URL
+    origin: ORIGIN, // Adjust this to match your front-end URL
     methods: ["GET", "POST"],
     allowedHeaders: ["Access-Control-Allow-Origin"]
   }
