@@ -8,8 +8,8 @@ const jwt = require("jsonwebtoken");
 // DEV OR PROD ENDPOINT
 const ENDPOINT =
   process.env.NODE_ENV === "production"
-    ? process.env.PROD_ENV || ""
-    : process.env.DEV_ENV || "";
+    ? process.env.DEV_ENV || ""
+    : process.env.PROD_ENV || "";
 // Create a Nodemailer transporter
 const transporter = nodemailer.createTransport({
   host: "smtp.dreamhost.com",
