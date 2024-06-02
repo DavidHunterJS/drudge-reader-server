@@ -60,10 +60,10 @@ export const updateUserProfile = async (
 ) => {
   try {
     const userId = req.user.id;
-    const { name, email } = req.body;
+    const { name, email, role } = req.body;
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { name, email },
+      { name, email, role },
       { new: true }
     );
     if (!updatedUser) {

@@ -109,8 +109,7 @@ export const userSchema = new Schema<UserDocument>(
     },
     role: {
       type: String,
-      enum: ["ADMIN", "USER"],
-      default: "USER"
+      enum: ["ADMIN", "USER"]
     },
     resetToken: String,
     resetTokenExpiration: Date,
