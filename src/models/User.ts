@@ -153,7 +153,8 @@ userSchema.methods.generateJWT = function () {
       expiresIn: "12h",
       id: this._id,
       provider: this.provider,
-      email: this.email
+      email: this.email,
+      role: this.role
     },
     secretOrKey
   );

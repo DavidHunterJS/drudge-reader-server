@@ -24,7 +24,7 @@ router.post("/reset-password", resetPassword);
 router.get("/verify-token", verifyResetToken);
 router.post("/password-request", passwordRequest);
 router.get("/users", getAllUsers);
-router.delete("/:userId", deleteUser);
+router.delete("/:userId", authMiddleware, adminMiddleware, deleteUser);
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.put("/users/:id", updateUser);
@@ -32,8 +32,6 @@ router.put("/users/:id", updateUser);
 router.get("/profile", authMiddleware, getUserProfile);
 router.put("/profile", authMiddleware, updateUserProfile);
 // protected admin route
-router.get("/admin-dashboard", authMiddleware, adminMiddleware, (req, res) => {
-  res.status(200).json({ message: "Welcome to the admin dashboard!" });
-});
+router.get("/admin-dashboard", authMiddleware, adminMiddleware);
 
 export default router;
