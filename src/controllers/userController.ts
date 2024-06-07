@@ -1,4 +1,5 @@
 // userController.ts
+import passport from "passport";
 import { Request, Response } from "express";
 import User, { validateUser, hashPassword } from "../models/User";
 const nodemailer = require("nodemailer");
@@ -125,39 +126,25 @@ export const registerUser = async (req: Request, res: Response) => {
 };
 
 export const loginUser = async (req: Request, res: Response) => {
-  try {
-    // Extract login credentials from the request body
-    const { username, password, role } = req.body;
-
-    // Find the user in the database
-    const user = await User.findOne({ username });
-
-    // If no user is found, send an error response
-    if (!user) {
-      return res.status(401).json({ error: "Invalid username or password" });
-    }
-
-    // Compare the provided password with the hashed password
-    user.comparePassword(password, (err, isMatch) => {
+  passport.authenticate(
+    "local",
+    { session: false },
+    (err: any, user?: any, info?: any) => {
       if (err) {
         return res.status(500).json({ error: "Internal server error" });
       }
 
-      // If the password comparison fails, send an error response
-      if (!isMatch) {
-        return res.status(401).json({ error: "Invalid username or password" });
+      if (!user) {
+        return res.status(401).json({ error: info.message });
       }
 
-      // Generate a JWT token
-      const token = user.generateJWT();
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1h" // Token expiration time
+      });
 
-      // Send a success response with the token and user data
       res.status(200).json({ token, user: user.toJSON() });
-    });
-  } catch (error) {
-    console.error("Error during user login:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
+    }
+  )(req, res);
 };
 
 export const updateUser = async (req: Request, res: Response) => {
@@ -180,63 +167,3 @@ export const updateUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-// DEV OR PROD ENDPOINT
-// const ENDPOINT =
-//   process.env.NODE_ENV === "production"
-//     ? process.env.REACT_APP_PROD_ENDPOINT || ""
-//     : process.env.REACT_APP_DEV_ENDPOINT || "";
-// // Create a Nodemailer transporter
-// const transporter = nodemailer.createTransport({
-//   host: "smtp.dreamhost.com",
-//   port: 465,
-//   secure: true,
-//   auth: {
-//     user: process.env.EMAIL_USER,
-//     pass: process.env.EMAIL_PASSWORD
-//   }
-// });
-
-// export const resetPassword = async (req: Request, res: Response) => {
-//   const { email } = req.body;
-//   try {
-//     // Find the user by their email address
-//     const user = await User.findOne({ email });
-
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
-
-//     // Generate a unique password reset token
-//     const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-//       expiresIn: "1h" // Token expires in 1 hour
-//     });
-
-//     // Store the reset token and expiration timestamp in the user's document
-//     user.resetToken = resetToken;
-//     user.resetTokenExpiration = new Date(Date.now() + 3600000); // Token expires in 1 hour (3600000 milliseconds)
-//     await user.save();
-
-//     // Create the password reset email
-//     const resetUrl = `https://${ENDPOINT}/reset-password?token=${resetToken}`;
-//     const mailOptions = {
-//       from: process.env.EMAIL_USER,
-//       to: email,
-//       subject: "Drudge Reader Password Reset",
-//       html: `
-//         <p>You have requested to reset your password.</p>
-//         <p>Please click the following link to reset your password:</p>
-//         <a href="${resetUrl}">${resetUrl}</a>
-//         <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
-//       `
-//     };
-
-//     // Send the password reset email
-//     await transporter.sendMail(mailOptions);
-
-//     res.json({ message: "Password reset email sent" });
-//   } catch (error) {
-//     console.error("Error generating password reset token:", error);
-//     res.status(500).json({ error: "An error occurred" });
-//   }
-// };
