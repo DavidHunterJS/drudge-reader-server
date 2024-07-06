@@ -52,15 +52,7 @@ export async function captureScreenshots(modifiedLinks: any[]): Promise<void> {
   const page = await browser.newPage();
   await page.setViewport({ width: 1700, height: 2160 });
 
-  const screenshotDir = path.join(
-    __dirname,
-    "/",
-    "var",
-    "www",
-    "html",
-    "trippy.wtf",
-    "images"
-  );
+  const screenshotDir = "/var/www/html/trippy.wtf/images";
   const existingScreenshots = fs.readdirSync(screenshotDir);
 
   for (const document of modifiedLinks) {
