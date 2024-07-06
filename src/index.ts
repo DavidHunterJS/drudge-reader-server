@@ -1,5 +1,6 @@
 // index.ts
 import express, { Response, Request, NextFunction } from "express";
+import bodyParser from "body-parser";
 import { createServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import dotenv from "dotenv";
@@ -8,6 +9,8 @@ import { connectToServer } from "./db/connect";
 import webSrcapeInterval from "./helpers/WebScrapeInterval";
 import { connectionHandler } from "./controllers/stories.controller";
 import userRoutes from "./routes/userRoutes";
+import captureRouter from "./routes/captureRoute";
+import { checkLinkChanges } from "./helpers/LinkCompare";
 
 dotenv.config();
 
@@ -29,10 +32,16 @@ const io = new SocketIOServer(httpServer, {
 
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.json());
 app.use(express.static(__dirname + "/node_modules/socket.io/client-dist"));
 
 // Mount user routes
 app.use("/api", userRoutes);
+
+// screenshot capture
+app.use("/capture", captureRouter);
+
+app.use("/api", checkLinkChanges);
 
 app.get("/", (request, response) => {
   response.send("Hello World!");

@@ -1,3 +1,4 @@
+// helpers/LinkCompare.ts
 import { removeOldStories } from "./dbUtils";
 
 let savedLinks: Set<string> | undefined;

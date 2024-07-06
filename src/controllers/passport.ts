@@ -1,7 +1,7 @@
 import * as passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import User from "../models/User"; // Assuming you have a User model
 
 // Define the types for the 'done' function
@@ -32,7 +32,7 @@ passport.use(
     }
   })
 );
-
+type secretOrKey = String | Buffer
 // JWT strategy for token-based authentication
 passport.use(
   new JwtStrategy(
