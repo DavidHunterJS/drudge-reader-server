@@ -54,8 +54,8 @@ export async function captureScreenshots(modifiedLinks: any[]): Promise<void> {
 
   const isDevelopment = process.env.NODE_ENV !== "production";
   const screenshotDir = isDevelopment
-  ? "/var/www/html/trippy.wtf/images";
-    : path.join(__dirname, "..", "..", "..", "client", "public", "images")
+    ? path.join(__dirname, "..", "..", "..", "client", "public", "images")
+    : "/var/www/html/trippy.wtf/images";
   const existingScreenshots = fs.readdirSync(screenshotDir);
 
   for (const document of modifiedLinks) {
