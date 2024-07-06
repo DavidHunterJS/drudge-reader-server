@@ -32,13 +32,13 @@ passport.use(
     }
   })
 );
-type secretOrKey = String | Buffer
+type secretOrKey = String | Buffer;
 // JWT strategy for token-based authentication
 passport.use(
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET // Make sure to define JWT_SECRET in your environment variables
+      secretOrKey: process.env.JWT_SECRET as string // Make sure to define JWT_SECRET in your environment variables
     },
     async (payload: JwtPayload, done: Done) => {
       try {
