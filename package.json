@@ -9,6 +9,10 @@
     "prod": "node ./dist/src/index.js",
     "test": "jest"
   },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  },
   "keywords": [
     "drudgereport",
     "typescript",
