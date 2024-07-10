@@ -12,34 +12,18 @@ interface ScraperConfig {
 }
 
 const scraperConfigs: ScraperConfig[] = [
-  { selector: "html body tt b tt b center", pageLocation: "headline" },
-  { selector: "html body tt b tt b center", pageLocation: "topLeft" },
+  { selector: "#DR-HU-MAIN", pageLocation: "headline" },
+  { selector: "#DR-HU-TOP-LEFT", pageLocation: "topLeft" },
   {
-    selector: ($: cheerio.Root) => {
-      let commentElement;
-      $("*")
-        .contents()
-        .each((_, el) => {
-          if (el.type === "comment") {
-            const normalizedText = $(el).text().replace(/\s+/g, " ").trim();
-            console.log("Found comment:", normalizedText);
-            if (normalizedText === "L I NKS FI RS T C O LU MN") {
-              commentElement = $(el);
-              return false; // stop iterating
-            }
-          }
-        });
-      console.log("Target comment found:", commentElement != null);
-      return commentElement;
-    },
+    selector: "ins.adsbygoogle:nth-child(33)",
     pageLocation: "column1"
   },
   {
-    selector: "html body font font center table tbody tr td",
+    selector: "ins.adsbygoogle:nth-child(37)",
     pageLocation: "column2"
   },
   {
-    selector: "html body font font center table tbody tr td tt b hr",
+    selector: "ins.adsbygoogle:nth-child(36)",
     pageLocation: "column3"
   }
 ];
@@ -88,22 +72,11 @@ export const grabAnchors = async (url: string = URL) => {
           anchors.push(story);
         });
     } else if (pageLocation === "column1") {
-      const commentElement = (selector as Function)($);
-      console.log("Comment element found:", commentElement != null);
-      if (commentElement != null) {
-        console.log("Comment text:", commentElement.text());
-        const nextElements = commentElement.nextAll();
-        console.log("Next elements:", nextElements.length);
-        console.log(
-          "Next elements types:",
-          nextElements.map((_, el) => el.tagName).get()
-        );
-        const nextAnchors = nextElements.filter("a");
-        console.log("Next anchor elements:", nextAnchors.length);
-
-        nextAnchors.each((i: number, e: cheerio.Element) => {
+      $(selector as string)
+        .prevAll()
+        .filter("A")
+        .each((i, e) => {
           const el = $.html(e);
-          console.log("Found anchor:", el);
           linkArr.push(el);
           const story: IStory = new Story({
             link: el,
@@ -113,10 +86,36 @@ export const grabAnchors = async (url: string = URL) => {
           });
           anchors.push(story);
         });
-      } else {
-        console.log("Comment element not found for column1");
-      }
     } else if (pageLocation === "topLeft") {
+      $(selector as string)
+        .find("A")
+        .each((i, e) => {
+          const el = $.html(e);
+          linkArr.push(el);
+          const story: IStory = new Story({
+            link: el,
+            addedOn: Date.now(),
+            removedOn: 0,
+            pageLocation
+          });
+          anchors.push(story);
+        });
+    } else if (pageLocation === "column2") {
+      $(selector as string)
+        .prevAll()
+        .filter("A")
+        .each((i, e) => {
+          const el = $.html(e);
+          linkArr.push(el);
+          const story: IStory = new Story({
+            link: el,
+            addedOn: Date.now(),
+            removedOn: 0,
+            pageLocation
+          });
+          anchors.push(story);
+        });
+    } else if (pageLocation === "column3") {
       $(selector as string)
         .prevAll()
         .filter("A")
