@@ -15,15 +15,15 @@ const scraperConfigs: ScraperConfig[] = [
   { selector: "#DR-HU-MAIN", pageLocation: "headline" },
   { selector: "#DR-HU-TOP-LEFT", pageLocation: "topLeft" },
   {
-    selector: "ins.adsbygoogle:nth-child(33)",
+    selector: '[data-ad-slot="2076088010"]',
     pageLocation: "column1"
   },
   {
-    selector: "ins.adsbygoogle:nth-child(37)",
+    selector: '[data-ad-slot="2428475644"]',
     pageLocation: "column2"
   },
   {
-    selector: "ins.adsbygoogle:nth-child(36)",
+    selector: '[data-ad-slot="6206904715"]',
     pageLocation: "column3"
   }
 ];
@@ -71,21 +71,6 @@ export const grabAnchors = async (url: string = URL) => {
           });
           anchors.push(story);
         });
-    } else if (pageLocation === "column1") {
-      $(selector as string)
-        .prevAll()
-        .filter("A")
-        .each((i, e) => {
-          const el = $.html(e);
-          linkArr.push(el);
-          const story: IStory = new Story({
-            link: el,
-            addedOn: Date.now(),
-            removedOn: 0,
-            pageLocation
-          });
-          anchors.push(story);
-        });
     } else if (pageLocation === "topLeft") {
       $(selector as string)
         .find("A")
@@ -100,10 +85,27 @@ export const grabAnchors = async (url: string = URL) => {
           });
           anchors.push(story);
         });
+    } else if (pageLocation === "column1") {
+      $(selector as string)
+        .prevAll()
+        .find("a")
+        .addBack("a")
+        .each((i, e) => {
+          const el = $.html(e);
+          linkArr.push(el);
+          const story: IStory = new Story({
+            link: el,
+            addedOn: Date.now(),
+            removedOn: 0,
+            pageLocation
+          });
+          anchors.push(story);
+        });
     } else if (pageLocation === "column2") {
       $(selector as string)
         .prevAll()
-        .filter("A")
+        .find("a")
+        .addBack("a")
         .each((i, e) => {
           const el = $.html(e);
           linkArr.push(el);
@@ -118,7 +120,8 @@ export const grabAnchors = async (url: string = URL) => {
     } else if (pageLocation === "column3") {
       $(selector as string)
         .prevAll()
-        .filter("A")
+        .find("a")
+        .addBack("a")
         .each((i, e) => {
           const el = $.html(e);
           linkArr.push(el);
