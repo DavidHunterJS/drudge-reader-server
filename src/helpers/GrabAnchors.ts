@@ -7,35 +7,18 @@ import { setCapturePendingState, getCapturePendingState } from "./captureState";
 const URL: string = "https://www.drudgereport.com/";
 
 interface ScraperConfig {
-  selector: string | ((cheerioAPI: cheerio.CheerioAPI) => cheerio.Cheerio);
+  selector: string | cheerio.Cheerio;
   pageLocation: string;
 }
 
-const scraperConfigs: ScraperConfig[] = [
-  { selector: "#DR-HU-MAIN", pageLocation: "headline" },
-  { selector: "#DR-HU-TOP-LEFT", pageLocation: "topLeft" },
-  {
-    selector: '[data-ad-slot="2076088010"]',
-    pageLocation: "column1"
-  },
-  {
-    selector: '[data-ad-slot="2428475644"]',
-    pageLocation: "column2"
-  },
-  {
-    selector: '[data-ad-slot="6206904715"]',
-    pageLocation: "column3"
-  }
-];
-
 function getAllComments($: cheerio.Root) {
-  const comments: string[] = [];
+  const comments: cheerio.Element[] = [];
   $.root()
     .find("*")
     .contents()
     .each((_, element) => {
       if (element.type === "comment") {
-        comments.push($.html(element));
+        comments.push(element);
       }
     });
   return comments;
@@ -46,10 +29,22 @@ export const grabAnchors = async (url: string = URL) => {
   const $ = cheerio.load(response.data);
 
   const allComments = getAllComments($);
-  console.log("All comments found in the document:");
-  allComments.forEach((comment, index) => {
-    console.log(`Comment ${index + 1}:`, comment);
-  });
+  // console.log("All comments found in the document:");
+  // allComments.forEach((comment, index) => {
+  //   console.log(`Comment ${index + 1}:`, $(comment).text().trim());
+  // });
+
+  const selector1 = $(allComments[7]).next();
+  const selector2 = $(allComments[8]).next();
+  const selector3 = $(allComments[9]).next();
+
+  const scraperConfigs: ScraperConfig[] = [
+    { selector: "#DR-HU-MAIN", pageLocation: "headline" },
+    { selector: "#DR-HU-TOP-LEFT", pageLocation: "topLeft" },
+    { selector: selector1, pageLocation: "column1" },
+    { selector: selector2, pageLocation: "column2" },
+    { selector: selector3, pageLocation: "column3" }
+  ];
 
   let anchors: IStory[] = [];
   let linkArr: string[] = [];
@@ -57,83 +52,21 @@ export const grabAnchors = async (url: string = URL) => {
   scraperConfigs.forEach((config) => {
     const { selector, pageLocation } = config;
 
-    if (pageLocation === "headline") {
-      $(selector as string)
-        .find("A")
-        .each((i, e) => {
-          const el = $.html(e);
-          linkArr.push(el);
-          const story: IStory = new Story({
-            link: el,
-            addedOn: Date.now(),
-            removedOn: 0,
-            pageLocation
-          });
-          anchors.push(story);
-        });
-    } else if (pageLocation === "topLeft") {
-      $(selector as string)
-        .find("A")
-        .each((i, e) => {
-          const el = $.html(e);
-          linkArr.push(el);
-          const story: IStory = new Story({
-            link: el,
-            addedOn: Date.now(),
-            removedOn: 0,
-            pageLocation
-          });
-          anchors.push(story);
-        });
-    } else if (pageLocation === "column1") {
-      $(selector as string)
-        .prevAll()
-        .find("a")
-        .addBack("a")
-        .each((i, e) => {
-          const el = $.html(e);
-          linkArr.push(el);
-          const story: IStory = new Story({
-            link: el,
-            addedOn: Date.now(),
-            removedOn: 0,
-            pageLocation
-          });
-          anchors.push(story);
-        });
-    } else if (pageLocation === "column2") {
-      $(selector as string)
-        .prevAll()
-        .find("a")
-        .addBack("a")
-        .each((i, e) => {
-          const el = $.html(e);
-          linkArr.push(el);
-          const story: IStory = new Story({
-            link: el,
-            addedOn: Date.now(),
-            removedOn: 0,
-            pageLocation
-          });
-          anchors.push(story);
-        });
-    } else if (pageLocation === "column3") {
-      $(selector as string)
-        .prevAll()
-        .find("a")
-        .addBack("a")
-        .each((i, e) => {
-          const el = $.html(e);
-          linkArr.push(el);
-          const story: IStory = new Story({
-            link: el,
-            addedOn: Date.now(),
-            removedOn: 0,
-            pageLocation
-          });
-          anchors.push(story);
-        });
-    }
+    const $links = pageLocation.startsWith("column")
+      ? (selector as cheerio.Cheerio).prevAll().find("a").addBack("a")
+      : $(selector as string).find("A");
+
+    $links.each((i, e) => {
+      const el = $.html(e);
+      linkArr.push(el);
+      const story: IStory = new Story({
+        link: el,
+        addedOn: Date.now(),
+        removedOn: 0,
+        pageLocation
+      });
+      anchors.push(story);
+    });
   });
 
   const compareBool = checkLinkChanges(linkArr);
