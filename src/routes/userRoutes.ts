@@ -1,6 +1,6 @@
 // userRoutes.ts
 import express from "express";
-import { authenticateJWT } from "../middlewares/authMiddleware";
+import { authMiddleware } from "../middlewares/authMiddleware";
 import adminMiddleware from "../middlewares/adminMiddleware";
 import {
   passwordRequest,
@@ -28,18 +28,18 @@ router.get("/verify-token", verifyResetToken);
 router.post("/password-request", passwordRequest);
 router.get("/users", getAllUsers);
 
-router.delete("/:userId", authenticateJWT, adminMiddleware, deleteUser);
+router.delete("/:userId", authMiddleware, adminMiddleware, deleteUser);
 router.post("/signup", registerUser);
 router.post("/login", loginUser);
 router.put("/users/:id", updateUser);
 // protected routes
-router.get("/profile", authenticateJWT, getUserProfile);
-router.put("/profile", authenticateJWT, updateUserProfile);
+router.get("/profile", authMiddleware, getUserProfile);
+router.put("/profile", authMiddleware, updateUserProfile);
 // protected admin route
-router.get("/admin-dashboard", authenticateJWT, adminMiddleware);
+router.get("/admin-dashboard", authMiddleware, adminMiddleware);
 router.post("/modified-links", getModifiedLinks);
 router.post("/capture", captureRoute);
 
-router.get("/me", authenticateJWT, getUserInfo);
+router.get("/me", authMiddleware, getUserInfo);
 
 export default router;

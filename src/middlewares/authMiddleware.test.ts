@@ -3,7 +3,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import passport from "passport";
-import { authMiddleware, authenticateJWT } from "./authMiddleware";
+import { authMiddleware } from "./authMiddleware";
 
 // Mock jwt
 jest.mock("jsonwebtoken");
@@ -87,7 +87,7 @@ describe("Auth Middleware", () => {
         mockPassportAuthenticate
       );
 
-      authenticateJWT(
+      authMiddleware(
         mockRequest as Request,
         mockResponse as Response,
         nextFunction
@@ -115,7 +115,7 @@ describe("Auth Middleware", () => {
         mockPassportAuthenticate
       );
 
-      authenticateJWT(
+      authMiddleware(
         mockRequest as Request,
         mockResponse as Response,
         nextFunction
@@ -140,7 +140,7 @@ describe("Auth Middleware", () => {
         mockPassportAuthenticate
       );
 
-      authenticateJWT(
+      authMiddleware(
         mockRequest as Request,
         mockResponse as Response,
         nextFunction

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import * as yup from "yup";
@@ -24,17 +24,16 @@ export interface UserDocument extends Document {
   resetTokenExpiration?: Date;
   createdAt: Date;
   updatedAt: Date;
-  toJSON(): () => string;
+  toJSON(): Record<string, any>;
   generateJWT(): string;
-  registerUser(
-    newUser: UserDocument,
-    callback: (err?: Error | null) => void
-  ): void;
-  comparePassword(
-    candidatePassword: string,
-    callback: (err: Error | null, isMatch: boolean) => void
-  ): void;
+  registerUser(newUser: UserDocument): Promise<void>;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
+interface UserModel extends Model<UserDocument> {
+  hashPassword(password: string): Promise<string>;
+  validateUser(user: any): Promise<{ error: yup.ValidationError } | null>;
+}
+
 const isValidUrl = (str: string) => {
   var urlRegex =
     "^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$";
@@ -125,8 +124,8 @@ userSchema.methods.toJSON = function () {
   const avatar = isValidUrl(this.avatar || "")
     ? this.avatar || ""
     : fs.existsSync(absoluteAvatarFilePath)
-    ? `${AFP}/${IMAGES_FOLDER_PATH}${this.avatar || ""}`
-    : `${AFP}/${IMAGES_FOLDER_PATH}avatar2.jpg`;
+      ? `${AFP}/${IMAGES_FOLDER_PATH}${this.avatar || ""}`
+      : `${AFP}/${IMAGES_FOLDER_PATH}avatar2.jpg`;
 
   return {
     id: this._id,
@@ -161,35 +160,24 @@ userSchema.methods.generateJWT = function () {
   return token;
 };
 
-userSchema.methods.registerUser = function (
-  newUser: UserDocument,
-  callback: (err?: Error | null) => void
-) {
-  bcrypt.genSalt(10, (err: Error | null, salt: string) => {
-    bcrypt.hash(newUser.password, salt, (err: Error | null, hash: string) => {
-      if (err) {
-        console.log(err);
-        callback(err);
-        return;
-      }
-      newUser.password = hash;
-      newUser.save(callback);
-    });
-  });
+userSchema.methods.registerUser = async function (
+  newUser: UserDocument
+): Promise<void> {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(newUser.password, salt);
+    newUser.password = hash;
+    await newUser.save();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
 
 userSchema.methods.comparePassword = function (
-  candidatePassword: string,
-  callback: (err: Error | null, isMatch: boolean) => void
-) {
-  bcrypt.compare(
-    candidatePassword,
-    this.password,
-    (err: Error | null, isMatch: boolean) => {
-      if (err) return callback(err, false);
-      callback(null, isMatch);
-    }
-  );
+  candidatePassword: string
+): Promise<boolean> {
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 export async function hashPassword(password: string): Promise<string> {

@@ -1,6 +1,6 @@
 // userController.ts
 import passport from "passport";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import User, { validateUser, hashPassword } from "../models/User";
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
@@ -125,26 +125,43 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate(
     "local",
     { session: false },
-    (err: any, user?: any, info?: any) => {
+    (err: any, user: any, info: any) => {
       if (err) {
-        return res.status(500).json({ error: "Internal server error" });
+        return next(err); // Pass errors to Express error handler
       }
 
       if (!user) {
-        return res.status(401).json({ error: info.message });
+        return res
+          .status(401)
+          .json({ error: info.message || "Authentication failed" });
       }
 
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: "1h" // Token expiration time
       });
 
-      res.status(200).json({ token, user: user.toJSON() });
+      // Set the token as an HTTP-only cookie
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+        sameSite: "lax", // Use 'strict' in production if possible
+        maxAge: 3600000 // 1 hour
+      });
+
+      // Send user info without sensitive data
+      const safeUser = {
+        id: user._id,
+        username: user.username
+        // Add other non-sensitive fields as needed
+      };
+
+      res.status(200).json({ user: safeUser });
     }
-  )(req, res);
+  )(req, res, next);
 };
 
 export const updateUser = async (req: Request, res: Response) => {
