@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 export const getUserInfo = (req: Request, res: Response) => {
-  console.log("Received request to get user info");
+  console.log("~~~~~Received request to get user info");
   try {
     const token = req.cookies.token; // Access the token from the cookie
 

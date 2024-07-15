@@ -1,6 +1,7 @@
 // index.ts
 import express, { Response, Request, NextFunction } from "express";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import { createServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import dotenv from "dotenv";
@@ -40,8 +41,12 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(express.static(__dirname + "/node_modules/socket.io/client-dist"));
-
+app.use((req, res, next) => {
+  console.log("Incoming request headers:", req.headers);
+  next();
+});
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {

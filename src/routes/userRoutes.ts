@@ -19,6 +19,7 @@ import {
 import { getModifiedLinks } from "../controllers/modifiedLinksController";
 import captureRoute from "../routes/captureRoute";
 import { getUserInfo } from "../controllers/userAuthController";
+import { checkAuth } from "../routes/checkAuthRoute";
 const jwt = require("jsonwebtoken");
 
 const router = express.Router();
@@ -41,5 +42,6 @@ router.post("/modified-links", getModifiedLinks);
 router.post("/capture", captureRoute);
 
 router.get("/me", authMiddleware, getUserInfo);
+router.get("/check-auth", checkAuth);
 
 export default router;
