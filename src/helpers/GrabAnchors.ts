@@ -11,32 +11,32 @@ interface ScraperConfig {
   pageLocation: string;
 }
 
-function getAllComments($: cheerio.Root) {
-  const comments: cheerio.Element[] = [];
-  $.root()
+function getSpecificComments($: cheerio.Root): cheerio.Element[] {
+  const targetComments = [
+    "LINKSFIRSTCOLUMN",
+    "LINKSSECONDCOLUMN",
+    "LINKSANDSEARCHES3RDCOLUMN"
+  ];
+
+  return $.root()
     .find("*")
     .contents()
-    .each((_, element) => {
-      if (element.type === "comment") {
-        comments.push(element);
-      }
-    });
-  return comments;
+    .filter(
+      (_, element): element is cheerio.Element =>
+        element.type === "comment" &&
+        element.data !== undefined &&
+        targetComments.includes(element.data.replace(/\s+/g, "").toUpperCase())
+    )
+    .toArray();
 }
-
 export const grabAnchors = async (url: string = URL) => {
   const response: AxiosResponse = await axios.get(url);
   const $ = cheerio.load(response.data);
 
-  const allComments = getAllComments($);
-  // console.log("All comments found in the document:");
-  // allComments.forEach((comment, index) => {
-  //   console.log(`Comment ${index + 1}:`, $(comment).text().trim());
-  // });
-
-  const selector1 = $(allComments[7]).next();
-  const selector2 = $(allComments[8]).next();
-  const selector3 = $(allComments[9]).next();
+  const allComments = getSpecificComments($);
+  const selector1 = $(allComments[0]).next();
+  const selector2 = $(allComments[1]).next();
+  const selector3 = $(allComments[2]).next();
 
   const scraperConfigs: ScraperConfig[] = [
     { selector: "#DR-HU-MAIN", pageLocation: "headline" },
