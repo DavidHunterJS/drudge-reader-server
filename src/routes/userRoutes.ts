@@ -20,6 +20,7 @@ import { getModifiedLinks } from "../controllers/modifiedLinksController";
 import captureRoute from "../routes/captureRoute";
 import { getUserInfo } from "../controllers/userAuthController";
 import { checkAuth } from "../routes/checkAuthRoute";
+import { logout } from "./logoutRoute";
 const jwt = require("jsonwebtoken");
 
 const router = express.Router();
@@ -32,6 +33,7 @@ router.get("/users", getAllUsers);
 router.delete("/:userId", authMiddleware, adminMiddleware, deleteUser);
 router.post("/signup", registerUser);
 router.post("/login", loginUser);
+router.post("/logout", logout);
 router.put("/users/:id", updateUser);
 // protected routes
 router.get("/profile", authMiddleware, getUserProfile);
