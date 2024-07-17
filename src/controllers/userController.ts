@@ -42,12 +42,14 @@ export const getUserProfile = async (
   res: Response
 ) => {
   try {
-    const userId = req.user.id; // Assuming the user ID is stored in req.user after authentication
-    const user = await User.findById(userId);
+    const userId = req.user.id;
+    const user = await User.findById(userId).select(
+      "provider firstName lastName username email avatar role createdAt updatedAt"
+    );
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.json(user);
+    res.json(user.toJSON());
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
@@ -61,10 +63,10 @@ export const updateUserProfile = async (
 ) => {
   try {
     const userId = req.user.id;
-    const { name, email, role } = req.body;
+    const { name, email } = req.body;
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { name, email, role },
+      { name, email },
       { new: true }
     );
     if (!updatedUser) {
@@ -77,11 +79,12 @@ export const updateUserProfile = async (
   }
 };
 
+// signup new user
 export const registerUser = async (req: Request, res: Response) => {
   console.log("Registration route called");
   try {
     // Extract user registration data from the request body
-    const { username, email, password, firstname, lastname, role } = req.body;
+    const { username, email, password, firstName, lastName, role } = req.body;
 
     // Validate the registration data
     const validationError = await validateUser(req.body);
@@ -100,8 +103,8 @@ export const registerUser = async (req: Request, res: Response) => {
     // Create a new user instance
     const newUser = new User({
       provider: "local",
-      firstname,
-      lastname,
+      firstName,
+      lastName,
       username,
       email,
       password,
@@ -140,9 +143,15 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
           .json({ error: info.message || "Authentication failed" });
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h" // Token expiration time
-      });
+      const token = jwt.sign(
+        {
+          id: user._id,
+          username: user.username,
+          role: user.role
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
 
       // Set the token as an HTTP-only cookie
       res.cookie("token", token, {

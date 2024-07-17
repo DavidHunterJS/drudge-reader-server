@@ -43,7 +43,10 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(__dirname + "/node_modules/socket.io/client-dist"));
-
+app.use((req, res, next) => {
+  console.log("Incoming request headers:", req.headers);
+  next();
+});
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {

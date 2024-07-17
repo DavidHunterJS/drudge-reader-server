@@ -141,10 +141,7 @@ userSchema.methods.toJSON = function () {
   };
 };
 
-const secretOrKey =
-  process.env.NODE_ENV === "production"
-    ? process.env.JWT_SECRET_PROD || "default_prod_secret"
-    : process.env.JWT_SECRET_DEV || "default_dev_secret";
+const secretOrKey = process.env.JWT_SECRET || "default_dev_secret";
 
 userSchema.methods.generateJWT = function () {
   const token = jwt.sign(
